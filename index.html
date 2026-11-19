@@ -8,76 +8,91 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f1f4f8;color:#222}
-.container{max-width:480px;margin:35px auto;padding:20px}
-.card{background:white;padding:24px;border-radius:14px;box-shadow:0 3px 15px #0001}
+.container{max-width:520px;margin:25px auto;padding:16px}
+.card{background:white;padding:22px;border-radius:14px;box-shadow:0 3px 15px #0001}
 h2{text-align:center;color:#183b62}
 input,button{width:100%;padding:13px;margin:7px 0;border-radius:8px;font-size:16px}
 input{border:1px solid #ccc}
 button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 button.secondary{background:#667788}
 button.danger{background:#b52b35}
-button:disabled{opacity:.5}
+button.success{background:#237a4b}
 .hidden{display:none}
-.message{text-align:center;padding:10px;margin-top:10px;border-radius:8px;background:#edf3f8}
+.message{padding:10px;margin-top:10px;border-radius:8px;background:#edf3f8}
 .person{border:1px solid #ddd;padding:12px;border-radius:9px;margin:10px 0}
-.person button{width:48%;font-size:14px}
-.actions{display:flex;justify-content:space-between;gap:8px}
-small{color:#666}
+.person button{font-size:14px;padding:10px}
+.actions{display:flex;gap:8px}
+.actions button{width:50%}
+.section-title{margin-top:22px;border-bottom:1px solid #ddd;padding-bottom:8px;color:#183b62}
+.status{font-size:13px;color:#666}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="card">
-    <h2>YAZICIOĞLU TİCARET</h2>
-    <p style="text-align:center">Bulut Stok Takip Sistemi</p>
+<div class="card">
+<h2>YAZICIOĞLU TİCARET</h2>
+<p style="text-align:center">Bulut Stok Takip Sistemi</p>
 
-    <section id="auth">
-      <div id="loginForm">
-        <h3>Giriş Yap</h3>
-        <input id="loginEmail" type="email" placeholder="E-posta">
-        <input id="loginPassword" type="password" placeholder="Şifre">
-        <button onclick="login()">Giriş Yap</button>
-        <button class="secondary" onclick="showRegister()">Yeni Personel Kaydı</button>
-        <button class="secondary" onclick="resetPassword()">Şifremi Unuttum</button>
-      </div>
+<section id="auth">
+<div id="loginForm">
+<h3>Giriş Yap</h3>
+<input id="loginEmail" type="email" placeholder="E-posta">
+<input id="loginPassword" type="password" placeholder="Şifre">
+<button onclick="login()">Giriş Yap</button>
+<button class="secondary" onclick="showRegister()">Yeni Personel Kaydı</button>
+<button class="secondary" onclick="resetPassword()">Şifremi Unuttum</button>
+</div>
 
-      <div id="registerForm" class="hidden">
-        <h3>Personel Kaydı</h3>
-        <input id="regName" placeholder="Ad Soyad">
-        <input id="regEmail" type="email" placeholder="E-posta">
-        <input id="regPassword" type="password" placeholder="Şifre (en az 6 karakter)">
-        <button onclick="register()">Kayıt Ol</button>
-        <button class="secondary" onclick="showLogin()">Giriş Ekranına Dön</button>
-      </div>
+<div id="registerForm" class="hidden">
+<h3>Personel Kaydı</h3>
+<input id="regName" placeholder="Ad Soyad">
+<input id="regEmail" type="email" placeholder="E-posta">
+<input id="regPassword" type="password" placeholder="Şifre (en az 6 karakter)">
+<button onclick="register()">Kayıt Ol</button>
+<button class="secondary" onclick="showLogin()">Giriş Ekranına Dön</button>
+</div>
+<div id="message" class="message hidden"></div>
+</section>
 
-      <div id="message" class="message hidden"></div>
-    </section>
+<section id="pending" class="hidden">
+<h3>Onay Bekleniyor</h3>
+<p>Üyeliğiniz oluşturuldu. Yönetici onayını bekliyorsunuz.</p>
+<button class="secondary" onclick="logout()">Çıkış Yap</button>
+</section>
 
-    <section id="pending" class="hidden">
-      <h3>Onay Bekleniyor</h3>
-      <p>Üyeliğiniz oluşturuldu. Yönetici hesabının onayını bekliyorsunuz.</p>
-      <button class="secondary" onclick="logout()">Çıkış Yap</button>
-    </section>
+<section id="rejected" class="hidden">
+<h3>Üyelik Onaylanmadı</h3>
+<p>Hesabınız yönetici tarafından onaylanmadı.</p>
+<button class="secondary" onclick="logout()">Çıkış Yap</button>
+</section>
 
-    <section id="rejected" class="hidden">
-      <h3>Üyelik Onaylanmadı</h3>
-      <p>Hesabınız yönetici tarafından onaylanmadı.</p>
-      <button class="secondary" onclick="logout()">Çıkış Yap</button>
-    </section>
+<section id="inactive" class="hidden">
+<h3>Hesabınız Pasif</h3>
+<p>Yönetici hesabınızı geçici olarak pasife almış. Erişim için yöneticinizle görüşün.</p>
+<button class="secondary" onclick="logout()">Çıkış Yap</button>
+</section>
 
-    <section id="dashboard" class="hidden">
-      <h3 id="welcome"></h3>
-      <p>Giriş başarılı.</p>
+<section id="dashboard" class="hidden">
+<h3 id="welcome"></h3>
+<p>Giriş başarılı.</p>
 
-      <div id="adminPanel" class="hidden">
-        <hr>
-        <h3>Personel Onayları</h3>
-        <div id="staffList">Yükleniyor...</div>
-      </div>
+<div id="adminPanel" class="hidden">
+<hr>
+<h3>Personel Yönetimi</h3>
 
-      <button class="secondary" onclick="logout()">Güvenli Çıkış</button>
-    </section>
-  </div>
+<h4 class="section-title">Bekleyen Personeller</h4>
+<div id="pendingList">Yükleniyor...</div>
+
+<h4 class="section-title">Aktif Personeller</h4>
+<div id="activeList">Yükleniyor...</div>
+
+<h4 class="section-title">Pasif Personeller</h4>
+<div id="inactiveList">Yükleniyor...</div>
+</div>
+
+<button class="secondary" onclick="logout()">Güvenli Çıkış</button>
+</section>
+</div>
 </div>
 
 <script type="module">
@@ -85,10 +100,9 @@ import { createClient } from
 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 const SUPABASE_URL = 'https://axazlwychehqcpszspoi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T';
+const SUPABASE_KEY = 'sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4Ta';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const $ = id => document.getElementById(id);
 
 function message(text) {
@@ -97,7 +111,7 @@ function message(text) {
 }
 
 function hideAll() {
-  ['auth','pending','rejected','dashboard'].forEach(id =>
+  ['auth','pending','rejected','inactive','dashboard'].forEach(id =>
     $(id).classList.add('hidden')
   );
 }
@@ -117,13 +131,9 @@ window.showLogin = () => {
 window.login = async () => {
   const email = $('loginEmail').value.trim();
   const password = $('loginPassword').value;
-
   if (!email || !password) return message('E-posta ve şifre girin.');
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email, password
-  });
-
+  const { error } = await supabase.auth.signInWithPassword({email,password});
   if (error) return message('Giriş hatası: ' + error.message);
 
   await checkSession();
@@ -140,10 +150,8 @@ window.register = async () => {
   if (password.length < 6)
     return message('Şifre en az 6 karakter olmalı.');
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name } }
+  const {data,error} = await supabase.auth.signUp({
+    email,password,options:{data:{full_name}}
   });
 
   if (error) return message('Kayıt hatası: ' + error.message);
@@ -157,15 +165,13 @@ window.register = async () => {
 
 window.resetPassword = async () => {
   const email = $('loginEmail').value.trim();
-
   if (!email) return message('Önce e-posta adresinizi yazın.');
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: location.origin + location.pathname
+  const {error} = await supabase.auth.resetPasswordForEmail(email,{
+    redirectTo:location.origin + location.pathname
   });
 
   if (error) return message('Hata: ' + error.message);
-
   message('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.');
 };
 
@@ -177,7 +183,7 @@ window.logout = async () => {
 };
 
 async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {data:{session}} = await supabase.auth.getSession();
 
   if (!session) {
     hideAll();
@@ -185,10 +191,10 @@ async function checkSession() {
     return;
   }
 
-  const { data: profile, error } = await supabase
+  const {data:profile,error} = await supabase
     .from('user_profiles')
-    .select('full_name, role, status')
-    .eq('id', session.user.id)
+    .select('full_name,role,status')
+    .eq('id',session.user.id)
     .single();
 
   if (error || !profile) {
@@ -210,6 +216,11 @@ async function checkSession() {
     return;
   }
 
+  if (profile.status === 'inactive') {
+    $('inactive').classList.remove('hidden');
+    return;
+  }
+
   if (profile.status !== 'active') {
     $('auth').classList.remove('hidden');
     message('Hesap durumu geçersiz.');
@@ -217,7 +228,7 @@ async function checkSession() {
   }
 
   $('dashboard').classList.remove('hidden');
-  $('welcome').textContent = 'Hoş geldiniz, ' + profile.full_name;
+  $('welcome').textContent = 'Hoş geldiniz, ' + (profile.full_name || '');
 
   if (profile.role === 'admin') {
     $('adminPanel').classList.remove('hidden');
@@ -226,25 +237,34 @@ async function checkSession() {
 }
 
 async function loadStaff() {
-  $('staffList').textContent = 'Personeller yükleniyor...';
+  await Promise.all([
+    loadStaffGroup('pending','pendingList'),
+    loadStaffGroup('active','activeList'),
+    loadStaffGroup('inactive','inactiveList')
+  ]);
+}
 
-  const { data, error } = await supabase
+async function loadStaffGroup(status, elementId) {
+  const el = $(elementId);
+  el.textContent = 'Yükleniyor...';
+
+  const {data,error} = await supabase
     .from('user_profiles')
-    .select('id, full_name, status')
-    .eq('role', 'staff')
-    .eq('status', 'pending');
+    .select('id,full_name,status')
+    .eq('role','staff')
+    .eq('status',status);
 
   if (error) {
-    $('staffList').textContent = 'Personeller alınamadı: ' + error.message;
+    el.textContent = 'Hata: ' + error.message;
     return;
   }
 
   if (!data || data.length === 0) {
-    $('staffList').textContent = 'Bekleyen personel bulunmuyor.';
+    el.textContent = 'Bu bölümde personel bulunmuyor.';
     return;
   }
 
-  $('staffList').innerHTML = '';
+  el.innerHTML = '';
 
   data.forEach(person => {
     const div = document.createElement('div');
@@ -253,32 +273,60 @@ async function loadStaff() {
     const name = document.createElement('strong');
     name.textContent = person.full_name || 'İsimsiz personel';
 
+    const statusText = document.createElement('p');
+    statusText.className = 'status';
+    statusText.textContent =
+      status === 'pending' ? 'Onay bekliyor' :
+      status === 'active' ? 'Aktif personel' : 'Pasif personel';
+
+    div.append(name,statusText);
+
     const actions = document.createElement('div');
     actions.className = 'actions';
 
-    const approve = document.createElement('button');
-    approve.textContent = 'Onayla';
-    approve.onclick = () => staffAction('approve_staff', person.id);
+    if (status === 'pending') {
+      const approve = document.createElement('button');
+      approve.className = 'success';
+      approve.textContent = 'Onayla';
+      approve.onclick = () => staffAction('approve_staff',person.id);
 
-    const reject = document.createElement('button');
-    reject.textContent = 'Reddet';
-    reject.className = 'danger';
-    reject.onclick = () => staffAction('reject_staff', person.id);
+      const reject = document.createElement('button');
+      reject.className = 'danger';
+      reject.textContent = 'Reddet';
+      reject.onclick = () => staffAction('reject_staff',person.id);
 
-    actions.append(approve, reject);
-    div.append(name, actions);
-    $('staffList').append(div);
+      actions.append(approve,reject);
+    }
+
+    if (status === 'active') {
+      const deactivate = document.createElement('button');
+      deactivate.className = 'danger';
+      deactivate.textContent = 'Pasife Al';
+      deactivate.onclick = () => changeStatus(person.id,'inactive');
+      actions.append(deactivate);
+    }
+
+    if (status === 'inactive') {
+      const activate = document.createElement('button');
+      activate.className = 'success';
+      activate.textContent = 'Yeniden Aktifleştir';
+      activate.onclick = () => changeStatus(person.id,'active');
+      actions.append(activate);
+    }
+
+    if (actions.children.length) div.append(actions);
+    el.append(div);
   });
 }
 
-async function staffAction(functionName, id) {
+async function staffAction(functionName,id) {
   const approved = functionName === 'approve_staff';
-  if (!confirm(approved ? 'Bu personeli onaylamak istiyor musunuz?' :
-      'Bu personeli reddetmek istiyor musunuz?')) return;
 
-  const { error } = await supabase.rpc(functionName, {
-    target_user: id
-  });
+  if (!confirm(approved ?
+    'Bu personeli onaylamak istiyor musunuz?' :
+    'Bu personeli reddetmek istiyor musunuz?')) return;
+
+  const {error} = await supabase.rpc(functionName,{target_user:id});
 
   if (error) {
     alert('İşlem başarısız: ' + error.message);
@@ -289,12 +337,33 @@ async function staffAction(functionName, id) {
   await loadStaff();
 }
 
-supabase.auth.onAuthStateChange((event, session) => {
+async function changeStatus(id,newStatus) {
+  const active = newStatus === 'active';
+
+  if (!confirm(active ?
+    'Bu personeli yeniden aktifleştirmek istiyor musunuz?' :
+    'Bu personeli pasife almak istiyor musunuz?')) return;
+
+  const {error} = await supabase.rpc('set_staff_status',{
+    target_user:id,
+    new_status:newStatus
+  });
+
+  if (error) {
+    alert('İşlem başarısız: ' + error.message);
+    return;
+  }
+
+  alert(active ? 'Personel yeniden aktifleştirildi.' : 'Personel pasife alındı.');
+  await loadStaff();
+}
+
+supabase.auth.onAuthStateChange((event,session) => {
   if (event === 'PASSWORD_RECOVERY') {
     const newPassword = prompt('Yeni şifrenizi girin:');
     if (newPassword) {
-      supabase.auth.updateUser({ password: newPassword })
-        .then(({ error }) => {
+      supabase.auth.updateUser({password:newPassword})
+        .then(({error}) => {
           alert(error ? error.message : 'Şifreniz güncellendi.');
         });
     }
@@ -305,4 +374,3 @@ await checkSession();
 </script>
 </body>
 </html>
-w
