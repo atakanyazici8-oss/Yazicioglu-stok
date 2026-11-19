@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c32">
+  <title>Yazıcıoğlu Ticaret | Stok Takip</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5f4;
+      color: #172b25;
+    }
+    header {
+      background: #123c32;
+      color: white;
+      padding: 22px 18px;
+    }
+    header h2 { margin: 0 0 6px; }
+    main { padding: 18px; max-width: 850px; margin: auto; }
+    .card {
+      background: white;
+      padding: 18px;
+      border-radius: 13px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px #0000000d;
+    }
+    input, button {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0;
+      border-radius: 8px;
+      border: 1px solid #ccd6d1;
+      font-size: 16px;
+    }
+    button {
+      background: #176b50;
+      color: white;
+      border: 0;
+      font-weight: bold;
+    }
+    .muted { color: #718078; font-size: 13px; }
+    #app { display: none; }
+  </style>
+</head>
+<body>
+<header>
+  <h2>YAZICIOĞLU TİCARET</h2>
+  <div>Stok ve Cari Takip Sistemi</div>
+</header>
+
+<main>
+  <section class="card" id="login">
+    <h3>Personel Girişi</h3>
+    <input id="email" type="email" placeholder="E-posta adresi">
+    <input id="password" type="password" placeholder="Şifre">
+    <button onclick="login()">Giriş Yap</button>
+    <p id="message" class="muted"></p>
+  </section>
+
+  <section id="app">
+    <div class="card">
+      <h3>Hoş geldiniz</h3>
+      <p>Yazıcıoğlu Ticaret stok takip sistemine giriş yaptınız.</p>
+      <button onclick="logout()">Çıkış Yap</button>
+    </div>
+    <div class="card">
+      <h3>Stok Takip</h3>
+      <p>Ürün ve stok ekranları bağlantı aşamasında.</p>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { createClient } from
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const supabase = createClient(
+    'https://axazlwychehqcpszspoi.supabase.co',
+    'sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T'
+  );
+
+  window.login = async function() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const message = document.getElementById('message');
+
+    message.textContent = 'Giriş yapılıyor...';
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email, password
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      return;
+    }
+
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  };
+
+  window.logout = async function() {
+    await supabase.auth.signOut();
+    location.reload();
+  };
+</script>
+</body>
+</html>
