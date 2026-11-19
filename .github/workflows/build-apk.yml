@@ -18,11 +18,10 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Android SDK kur ve lisansları kabul et
+      - name: Android SDK kur
         uses: android-actions/setup-android@v4
         with:
           accept-android-sdk-licenses: true
-          log-accepted-android-sdk-licenses: false
           packages: platform-tools
 
       - name: Gradle kur
@@ -83,6 +82,8 @@ jobs:
               <uses-permission android:name="android.permission.INTERNET"/>
               <application
                   android:label="YAZICIOĞLU"
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher"
                   android:theme="@android:style/Theme.Material.Light.NoActionBar">
                   <activity
                       android:name=".MainActivity"
@@ -139,6 +140,31 @@ jobs:
               }
           }
           EOF
+
+      - name: Simgeyi Android boyutlarına dönüştür
+        run: |
+          python3 -m pip install Pillow
+          python3 - <<'PY'
+          from PIL import Image
+          import os
+
+          source = Image.open("icon.png").convert("RGBA")
+          sizes = {
+              "mdpi": 48,
+              "hdpi": 72,
+              "xhdpi": 96,
+              "xxhdpi": 144,
+              "xxxhdpi": 192
+          }
+
+          for density, size in sizes.items():
+              folder = f"app/src/main/res/mipmap-{density}"
+              os.makedirs(folder, exist_ok=True)
+              image = source.resize((size, size), Image.Resampling.LANCZOS)
+              image.save(f"{folder}/ic_launcher.png", "PNG")
+
+          print("YAZICIOĞLU simgesi hazırlandı.")
+          PY
 
       - name: APK oluştur
         run: gradle assembleDebug
