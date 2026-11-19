@@ -1,0 +1,14 @@
+
+{
+  "id": "/Yazicioglu-stok/",
+  "name": "Yazıcıoğlu Ticaret",
+  "short_name": "Yazıcıoğlu",
+  "description": "Yazıcıoğlu Ticaret Stok ve Cari Takip Sistemi",
+  "lang": "tr-TR",
+  "start_url": "/Yazicioglu-stok/",
+  "scope": "/Yazicioglu-stok/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f4f8",
+  "theme_color": "#17365d"
+}
