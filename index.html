@@ -2,111 +2,153 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#123c32">
-  <title>Yazıcıoğlu Ticaret | Stok Takip</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f5f4;
-      color: #172b25;
-    }
-    header {
-      background: #123c32;
-      color: white;
-      padding: 22px 18px;
-    }
-    header h2 { margin: 0 0 6px; }
-    main { padding: 18px; max-width: 850px; margin: auto; }
-    .card {
-      background: white;
-      padding: 18px;
-      border-radius: 13px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 8px #0000000d;
-    }
-    input, button {
-      width: 100%;
-      padding: 13px;
-      margin: 7px 0;
-      border-radius: 8px;
-      border: 1px solid #ccd6d1;
-      font-size: 16px;
-    }
-    button {
-      background: #176b50;
-      color: white;
-      border: 0;
-      font-weight: bold;
-    }
-    .muted { color: #718078; font-size: 13px; }
-    #app { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yazıcıoğlu Ticaret</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f1f5f3;color:#18352b}
+header{background:#123c32;color:white;padding:24px 18px}
+main{max-width:500px;margin:35px auto;padding:15px}
+.card{background:white;padding:22px;border-radius:14px;box-shadow:0 3px 15px #0001}
+input,button{width:100%;padding:14px;margin:8px 0;border:1px solid #ccd5d0;border-radius:8px;font-size:16px}
+button{background:#176b50;color:white;border:0;font-weight:bold}
+a{color:#176b50;cursor:pointer}
+.hidden{display:none}
+#message{font-size:14px;color:#a33}
+</style>
 </head>
 <body>
 <header>
-  <h2>YAZICIOĞLU TİCARET</h2>
-  <div>Stok ve Cari Takip Sistemi</div>
+<h2>YAZICIOĞLU TİCARET</h2>
+Stok ve Cari Takip Sistemi
 </header>
 
 <main>
-  <section class="card" id="login">
-    <h3>Personel Girişi</h3>
-    <input id="email" type="email" placeholder="E-posta adresi">
-    <input id="password" type="password" placeholder="Şifre">
-    <button onclick="login()">Giriş Yap</button>
-    <p id="message" class="muted"></p>
-  </section>
+<section class="card" id="login">
+<h3>Personel Girişi</h3>
+<input id="email" type="email" placeholder="E-posta adresi">
+<input id="password" type="password" placeholder="Şifre">
+<button id="loginBtn">Giriş Yap</button>
+<p><a id="forgot">Şifremi unuttum</a></p>
+<p id="message"></p>
+</section>
 
-  <section id="app">
-    <div class="card">
-      <h3>Hoş geldiniz</h3>
-      <p>Yazıcıoğlu Ticaret stok takip sistemine giriş yaptınız.</p>
-      <button onclick="logout()">Çıkış Yap</button>
-    </div>
-    <div class="card">
-      <h3>Stok Takip</h3>
-      <p>Ürün ve stok ekranları bağlantı aşamasında.</p>
-    </div>
-  </section>
+<section class="card hidden" id="forgotBox">
+<h3>Şifre Sıfırlama</h3>
+<p>E-posta adresini gir. Sana sıfırlama bağlantısı gönderelim.</p>
+<input id="resetEmail" type="email" placeholder="E-posta adresi">
+<button id="sendReset">Bağlantı Gönder</button>
+<p><a id="backLogin">Giriş ekranına dön</a></p>
+<p id="resetMessage"></p>
+</section>
+
+<section class="card hidden" id="newPasswordBox">
+<h3>Yeni Şifre Belirle</h3>
+<input id="newPassword" type="password" placeholder="Yeni şifre">
+<input id="repeatPassword" type="password" placeholder="Yeni şifre tekrar">
+<button id="savePassword">Şifreyi Kaydet</button>
+<p id="passwordMessage"></p>
+</section>
+
+<section class="card hidden" id="app">
+<h3>Giriş başarılı</h3>
+<p>Yazıcıoğlu Ticaret sistemine hoş geldiniz.</p>
+<button id="logout">Çıkış Yap</button>
+</section>
 </main>
 
 <script type="module">
-  import { createClient } from
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import {createClient} from
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  const supabase = createClient(
-    'https://axazlwychehqcpszspoi.supabase.co',
-    'sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T'
-  );
+const supabase=createClient(
+'https://axazlwychehqcpszspoi.supabase.co',
+'sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T'
+);
 
-  window.login = async function() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const message = document.getElementById('message');
+const $=id=>document.getElementById(id);
+const boxes=['login','forgotBox','newPasswordBox','app'];
 
-    message.textContent = 'Giriş yapılıyor...';
+function show(id){
+ boxes.forEach(x=>$(x).classList.add('hidden'));
+ $(id).classList.remove('hidden');
+}
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email, password
-    });
+function isRecovery(){
+ return location.hash.includes('type=recovery') ||
+        location.search.includes('type=recovery');
+}
 
-    if (error) {
-      message.textContent = error.message;
-      return;
-    }
+async function checkSession(){
+ const {data:{session}}=await supabase.auth.getSession();
+ if(isRecovery()){
+   show('newPasswordBox');
+ }else if(session){
+   show('app');
+ }else{
+   show('login');
+ }
+}
 
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-  };
+$('loginBtn').onclick=async()=>{
+ $('message').textContent='Giriş yapılıyor...';
+ const {error}=await supabase.auth.signInWithPassword({
+  email:$('email').value.trim(),
+  password:$('password').value
+ });
+ $('message').textContent=error?error.message:'';
+ if(!error)show('app');
+};
 
-  window.logout = async function() {
-    await supabase.auth.signOut();
-    location.reload();
-  };
+$('forgot').onclick=()=>{
+ $('resetEmail').value=$('email').value;
+ show('forgotBox');
+};
+
+$('backLogin').onclick=()=>show('login');
+
+$('sendReset').onclick=async()=>{
+ $('resetMessage').textContent='Gönderiliyor...';
+ const {error}=await supabase.auth.resetPasswordForEmail(
+  $('resetEmail').value.trim(),
+  {redirectTo:location.origin+location.pathname}
+ );
+ $('resetMessage').textContent=error?
+  error.message:'Sıfırlama bağlantısı gönderildi. E-postanı kontrol et.';
+};
+
+$('savePassword').onclick=async()=>{
+ const p=$('newPassword').value;
+ const p2=$('repeatPassword').value;
+ if(p.length<6){
+  $('passwordMessage').textContent='Şifre en az 6 karakter olmalı.';
+  return;
+ }
+ if(p!==p2){
+  $('passwordMessage').textContent='Şifreler eşleşmiyor.';
+  return;
+ }
+ const {error}=await supabase.auth.updateUser({password:p});
+ if(error){
+  $('passwordMessage').textContent=error.message;
+ }else{
+  $('passwordMessage').textContent='Şifren güncellendi. Giriş yapabilirsin.';
+  history.replaceState(null,'',location.pathname);
+  show('login');
+ }
+};
+
+$('logout').onclick=async()=>{
+ await supabase.auth.signOut();
+ show('login');
+};
+
+supabase.auth.onAuthStateChange((event)=>{
+ if(event==='PASSWORD_RECOVERY')show('newPasswordBox');
+});
+
+checkSession();
 </script>
 </body>
 </html>
