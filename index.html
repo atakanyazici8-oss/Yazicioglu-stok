@@ -76,15 +76,18 @@ button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 
 <section id="dashboard" class="hidden">
 <h3 id="welcome"></h3>
-<div class="nav">
-<button onclick="showPage('productsPage')">Ürünler ve Stok</button>
-<button onclick="showPage('movementPage')">Stok İşlemi</button>
-<button id="addProductNav" class="hidden" onclick="newProduct()">Ürün Ekle</button>
-<button id="staffNav" class="hidden" onclick="showPage('staffPage')">Personel Yönetimi</button>
-</div>
-</section>
-</div>
 
+<div class="nav">
+  <button onclick="showPage('productsPage')">Ürünler ve Stok</button>
+  <button onclick="showPage('movementPage')">Stok İşlemi</button>
+  <button onclick="showPage('salesPage')">Yeni Satış</button>
+  <button onclick="showPage('customersPage')">Cari Hesaplar</button>
+  <button onclick="showPage('paymentPage')">Tahsilat</button>
+  <button onclick="showPage('historyPage')">Satış Geçmişi</button>
+  <button id="addProductNav" class="hidden" onclick="newProduct()">Ürün Ekle</button>
+  <button id="staffNav" class="hidden" onclick="showPage('staffPage')">Personel Yönetimi</button>
+  <button id="settingsNav" class="hidden" onclick="showPage('settingsPage')">İskonto Ayarı</button>
+</div>
 <section id="productsPage" class="card hidden">
 <h3 class="section-title">Ürünler ve Stok</h3>
 <input id="searchProduct" placeholder="Ürün ara..." oninput="filterProducts()">
