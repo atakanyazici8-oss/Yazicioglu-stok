@@ -11,8 +11,8 @@ body{margin:0;background:#f1f4f8;font-family:Arial;color:#222}
 .container{max-width:680px;margin:20px auto;padding:12px}
 .card{background:white;padding:18px;border-radius:14px;box-shadow:0 3px 15px #0001;margin-bottom:14px}
 h2{text-align:center;color:#183b62}
-input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;font-size:15px}
-input,select{border:1px solid #ccc;background:white}
+input,select,button,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;font-size:15px}
+input,select,textarea{border:1px solid #ccc;background:white}
 button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 .secondary{background:#667788}
 .danger{background:#b52b35}
@@ -45,7 +45,6 @@ button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 <button class="secondary" onclick="showRegister()">Yeni Personel Kaydı</button>
 <button class="secondary" onclick="resetPassword()">Şifremi Unuttum</button>
 </div>
-
 <div id="registerForm" class="hidden">
 <h3>Personel Kaydı</h3>
 <input id="regName" placeholder="Ad Soyad">
@@ -73,21 +72,23 @@ button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 <p>Yönetici ile iletişime geçin.</p>
 <button class="secondary" onclick="logout()">Çıkış Yap</button>
 </section>
-
-<section id="dashboard" class="hidden">
-<h3 id="welcome"></h3>
-
-<div class="nav">
-  <button onclick="showPage('productsPage')">Ürünler ve Stok</button>
-  <button onclick="showPage('movementPage')">Stok İşlemi</button>
-  <button onclick="showPage('salesPage')">Yeni Satış</button>
-  <button onclick="showPage('customersPage')">Cari Hesaplar</button>
-  <button onclick="showPage('paymentPage')">Tahsilat</button>
-  <button onclick="showPage('historyPage')">Satış Geçmişi</button>
-  <button id="addProductNav" class="hidden" onclick="newProduct()">Ürün Ekle</button>
-  <button id="staffNav" class="hidden" onclick="showPage('staffPage')">Personel Yönetimi</button>
-  <button id="settingsNav" class="hidden" onclick="showPage('settingsPage')">İskonto Ayarı</button>
 </div>
+
+<section id="dashboard" class="card hidden">
+<h3 id="welcome"></h3>
+<div class="nav">
+<button onclick="showPage('productsPage')">Ürünler ve Stok</button>
+<button onclick="showPage('movementPage')">Stok İşlemi</button>
+<button onclick="showPage('salesPage')">Yeni Satış</button>
+<button onclick="showPage('customersPage')">Cari Hesaplar</button>
+<button onclick="showPage('paymentPage')">Tahsilat</button>
+<button onclick="showPage('historyPage')">Satış Geçmişi</button>
+<button id="addProductNav" class="hidden" onclick="newProduct()">Ürün Ekle</button>
+<button id="staffNav" class="hidden" onclick="showPage('staffPage')">Personel Yönetimi</button>
+<button id="settingsNav" class="hidden" onclick="showPage('settingsPage')">İskonto Ayarı</button>
+</div>
+</section>
+
 <section id="productsPage" class="card hidden">
 <h3 class="section-title">Ürünler ve Stok</h3>
 <input id="searchProduct" placeholder="Ürün ara..." oninput="filterProducts()">
@@ -113,9 +114,9 @@ button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 <option value="Kg">Kg</option>
 </select>
 <label>Alış fiyatı</label>
-<input id="pBuy" type="number" min="0" step="0.01" placeholder="Alış fiyatı">
+<input id="pBuy" type="number" min="0" step="0.01">
 <label>Satış fiyatı</label>
-<input id="pSale" type="number" min="0" step="0.01" placeholder="Satış fiyatı">
+<input id="pSale" type="number" min="0" step="0.01">
 <label>Para birimi</label>
 <select id="pCurrency">
 <option value="TRY">Türk Lirası (TL)</option>
@@ -145,12 +146,108 @@ button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
 <option value="return">İade / Geri Giriş</option>
 </select>
 <label>Miktar</label>
-<input id="movementQty" type="number" min="0.01" step="0.01" placeholder="Miktar">
+<input id="movementQty" type="number" min="0.01" step="0.01">
 <label>Açıklama</label>
 <input id="movementDesc" placeholder="İşlem açıklaması">
 <button onclick="saveMovement()">Stok İşlemini Kaydet</button>
 <div id="movementMessage" class="message hidden"></div>
 <button class="secondary" onclick="backHome()">Ana Menü</button>
+</section>
+
+<section id="salesPage" class="card hidden">
+<h2>Yeni Satış</h2>
+<label>Para Birimi</label>
+<select id="saleCurrency" onchange="updateSaleProducts()">
+<option value="TRY">TL</option>
+<option value="USD">Dolar</option>
+<option value="EUR">Euro</option>
+</select>
+<label>Döviz Kuru (TL karşılığı)</label>
+<input id="saleExchangeRate" type="number" value="1" step="0.0001">
+<label>Ürün</label>
+<select id="saleProduct"></select>
+<label>Miktar</label>
+<input id="saleQuantity" type="number" value="1" min="0.01" step="0.01">
+<button onclick="addToCart()">Sepete Ekle</button>
+<div id="cartList" class="message">Sepet boş.</div>
+<label>İskonto (%)</label>
+<input id="saleDiscount" type="number" value="0" min="0" step="0.01" oninput="renderCart()">
+<label>Ödeme Yöntemi</label>
+<select id="salePaymentMethod" onchange="toggleSaleCustomer()">
+<option value="cash">Nakit</option>
+<option value="card">Kredi Kartı</option>
+<option value="credit">Veresiye</option>
+</select>
+<label>Müşteri</label>
+<select id="saleCustomer">
+<option value="">Müşteri seçiniz</option>
+</select>
+<div id="saleTotal" class="message">Toplam: 0</div>
+<button class="success" onclick="completeSale()">Satışı Tamamla</button>
+<button class="secondary" onclick="backHome()">Geri</button>
+</section>
+
+<section id="customersPage" class="card hidden">
+<h2>Cari Hesaplar</h2>
+<div id="customerList"></div>
+<button id="addCustomerButton" class="hidden" onclick="newCustomer()">Müşteri Ekle</button>
+<button class="secondary" onclick="backHome()">Geri</button>
+</section>
+
+<section id="customerFormPage" class="card hidden">
+<h2 id="customerFormTitle">Müşteri Ekle</h2>
+<input id="customerId" type="hidden">
+<label>Müşteri Adı</label>
+<input id="customerName" placeholder="Ad Soyad / Firma">
+<label>Telefon</label>
+<input id="customerPhone" placeholder="Telefon">
+<label>Adres</label>
+<textarea id="customerAddress" placeholder="Adres"></textarea>
+<label>Vergi / TC No</label>
+<input id="customerTax" placeholder="Vergi veya TC numarası">
+<label>Para Birimi</label>
+<select id="customerCurrency">
+<option value="TRY">TL</option>
+<option value="USD">Dolar</option>
+<option value="EUR">Euro</option>
+</select>
+<button class="success" onclick="saveCustomer()">Müşteriyi Kaydet</button>
+<button class="secondary" onclick="showPage('customersPage')">Geri</button>
+</section>
+
+<section id="paymentPage" class="card hidden">
+<h2>Tahsilat</h2>
+<label>Müşteri</label>
+<select id="paymentCustomer" onchange="updatePaymentCurrency()"></select>
+<label>Tahsilat Tutarı</label>
+<input id="paymentAmount" type="number" min="0.01" step="0.01">
+<label>Para Birimi</label>
+<input id="paymentCurrency" value="TRY" readonly>
+<label>Döviz Kuru (TL karşılığı)</label>
+<input id="paymentExchangeRate" type="number" value="1" step="0.0001">
+<label>Ödeme Yöntemi</label>
+<select id="paymentMethod">
+<option value="cash">Nakit</option>
+<option value="card">Kredi Kartı</option>
+</select>
+<label>Açıklama</label>
+<input id="paymentNote" placeholder="Tahsilat açıklaması">
+<button class="success" onclick="savePayment()">Tahsilatı Kaydet</button>
+<button class="secondary" onclick="backHome()">Geri</button>
+</section>
+
+<section id="historyPage" class="card hidden">
+<h2>Satış Geçmişi</h2>
+<div id="salesHistory"></div>
+<button class="secondary" onclick="backHome()">Geri</button>
+</section>
+
+<section id="settingsPage" class="card hidden">
+<h2>İskonto Ayarı</h2>
+<label>En Yüksek İskonto (%)</label>
+<input id="maxDiscountInput" type="number" min="0" max="100" step="0.01">
+<button class="success" onclick="saveDiscountSettings()">Ayarı Kaydet</button>
+<button class="secondary" onclick="backHome()">Geri</button>
 </section>
 
 <section id="staffPage" class="card hidden">
@@ -175,10 +272,23 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const SUPABASE_URL='https://axazlwychehqcpszspoi.supabase.co';
 const SUPABASE_KEY='sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T';
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
-
 const $=id=>document.getElementById(id);
+
 let currentProfile=null;
 let products=[];
+let cart=[];
+let customers=[];
+let maxDiscount=15;
+
+function money(value,currency='TRY'){
+  try{
+    return new Intl.NumberFormat('tr-TR',{
+      style:'currency',currency
+    }).format(Number(value)||0);
+  }catch(e){
+    return (Number(value)||0).toFixed(2)+' '+currency;
+  }
+}
 
 function msg(id,text){
   $(id).textContent=text;
@@ -186,23 +296,49 @@ function msg(id,text){
 }
 
 function hideAll(){
-  ['auth','pending','rejected','inactive','dashboard','productsPage',
-   'productFormPage','movementPage','staffPage','logoutCard']
-   .forEach(id=>$(id).classList.add('hidden'));
+  [
+    'auth','pending','rejected','inactive','dashboard',
+    'productsPage','productFormPage','movementPage',
+    'salesPage','customersPage','customerFormPage',
+    'paymentPage','historyPage','settingsPage',
+    'staffPage','logoutCard'
+  ].forEach(id=>$(id).classList.add('hidden'));
 }
 
 function showPage(id){
-  ['dashboard','productsPage','productFormPage','movementPage','staffPage']
-  .forEach(x=>$(x).classList.add('hidden'));
+  const allowed=[
+    'dashboard','productsPage','productFormPage','movementPage',
+    'salesPage','customersPage','customerFormPage',
+    'paymentPage','historyPage','settingsPage','staffPage'
+  ];
+  if(!allowed.includes(id))return;
+
+  if(['productFormPage','staffPage','settingsPage','customerFormPage'].includes(id)
+     &&currentProfile?.role!=='admin'){
+    alert('Yönetici yetkisi gerekli.');
+    return;
+  }
+
+  hideAll();
   $(id).classList.remove('hidden');
   $('logoutCard').classList.remove('hidden');
+
   if(id==='productsPage')loadProducts();
   if(id==='movementPage')loadMovementProducts();
   if(id==='staffPage')loadStaff();
+  if(id==='salesPage')loadSalePage();
+  if(id==='customersPage')loadCustomers();
+  if(id==='paymentPage')loadCustomers();
+  if(id==='historyPage')loadSalesHistory();
+  if(id==='settingsPage')loadDiscountSettings();
 }
 window.showPage=showPage;
 
-function backHome(){showPage('dashboard')}
+function backHome(){
+  hideAll();
+  $('dashboard').classList.remove('hidden');
+  $('logoutCard').classList.remove('hidden');
+}
 window.backHome=backHome;
 
 window.showRegister=()=>{
@@ -288,22 +424,21 @@ async function checkSession(){
   $('logoutCard').classList.remove('hidden');
   $('welcome').textContent='Hoş geldiniz, '+(p.full_name||'');
 
-  if(p.role==='admin'){
-    $('addProductNav').classList.remove('hidden');
-    $('staffNav').classList.remove('hidden');
-  }else{
-    $('addProductNav').classList.add('hidden');
-    $('staffNav').classList.add('hidden');
-  }
+  $('addProductNav').classList.toggle('hidden',p.role!=='admin');
+  $('staffNav').classList.toggle('hidden',p.role!=='admin');
+  $('settingsNav').classList.toggle('hidden',p.role!=='admin');
+  $('addCustomerButton').classList.toggle('hidden',p.role!=='admin');
 }
 
-function money(value,currency){
-  try{
-    return new Intl.NumberFormat('tr-TR',{
-      style:'currency',currency:currency||'TRY'
-    }).format(Number(value||0));
-  }catch(e){return Number(value||0).toFixed(2)+' '+currency}
-}
+supabase.auth.onAuthStateChange((event)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    const pass=prompt('Yeni şifrenizi girin.');
+    if(pass){
+      supabase.auth.updateUser({password:pass})
+      .then(({error})=>alert(error?error.message:'Şifreniz güncellendi.'));
+    }
+  }
+});
 
 async function loadProducts(){
   $('productList').textContent='Ürünler yükleniyor...';
@@ -320,7 +455,6 @@ async function loadProducts(){
     $('productList').textContent='Ürün yükleme hatası: '+result.error.message;
     return;
   }
-
   products=result.data||[];
   renderProducts(products);
 }
@@ -328,7 +462,6 @@ async function loadProducts(){
 function renderProducts(items){
   const list=$('productList');
   list.innerHTML='';
-
   if(!items.length){
     list.textContent='Henüz ürün eklenmemiş.';
     return;
@@ -337,7 +470,6 @@ function renderProducts(items){
   items.forEach(p=>{
     const div=document.createElement('div');
     div.className='product';
-
     const title=document.createElement('strong');
     title.textContent=p.name||'İsimsiz ürün';
 
@@ -355,22 +487,18 @@ function renderProducts(items){
     const price=document.createElement('div');
     price.className='price';
     price.textContent='Satış: '+money(p.sale_price,p.currency);
-
     div.append(title,info,stock,price);
 
     if(currentProfile.role==='admin'){
       const buy=document.createElement('p');
       buy.className='muted';
       buy.textContent='Alış: '+money(p.buy_price,p.currency);
-
       const edit=document.createElement('button');
       edit.className='secondary';
       edit.textContent='Ürünü Düzenle';
       edit.onclick=()=>editProduct(p);
-
       div.append(buy,edit);
     }
-
     list.append(div);
   });
 }
@@ -385,9 +513,9 @@ window.filterProducts=()=>{
 };
 
 window.newProduct=()=>{
+  if(currentProfile?.role!=='admin')return alert('Yönetici yetkisi gerekli.');
   $('productFormTitle').textContent='Yeni Ürün Ekle';
-  ['productId','pName','pSku','pCategory','pBuy','pSale']
-    .forEach(id=>$(id).value='');
+  ['productId','pName','pSku','pCategory','pBuy','pSale'].forEach(id=>$(id).value='');
   $('pUnit').value='Adet';
   $('pCurrency').value='TRY';
   $('pMin').value='0';
@@ -415,17 +543,14 @@ function editProduct(p){
 }
 
 window.saveProduct=async()=>{
-  if(currentProfile.role!=='admin')
-    return alert('Yönetici yetkisi gerekli.');
-
+  if(currentProfile?.role!=='admin')return alert('Yönetici yetkisi gerekli.');
   const name=$('pName').value.trim();
   const buy=Number($('pBuy').value);
   const sale=Number($('pSale').value);
   const min=Number($('pMin').value);
 
   if(!name)return msg('productMessage','Ürün adı gerekli.');
-  if($('pBuy').value===''||$('pSale').value===''||
-     buy<0||sale<0||min<0)
+  if($('pBuy').value===''||$('pSale').value===''||buy<0||sale<0||min<0)
     return msg('productMessage','Fiyat ve minimum stok bilgilerini kontrol edin.');
 
   const {error}=await supabase.rpc('admin_save_product',{
@@ -442,14 +567,12 @@ window.saveProduct=async()=>{
   });
 
   if(error)return msg('productMessage','Kaydetme hatası: '+error.message);
-
   alert('Ürün kaydedildi.');
   showPage('productsPage');
 };
 
 async function loadMovementProducts(){
   let result;
-
   if(currentProfile.role==='admin'){
     result=await supabase.rpc('admin_list_products');
   }else{
@@ -464,7 +587,6 @@ async function loadMovementProducts(){
 
   const select=$('movementProduct');
   select.innerHTML='';
-
   (result.data||[]).filter(p=>p.active!==false).forEach(p=>{
     const opt=document.createElement('option');
     opt.value=p.id;
@@ -477,7 +599,6 @@ window.saveMovement=async()=>{
   const productId=$('movementProduct').value;
   const qty=Number($('movementQty').value);
   const type=$('movementType').value;
-
   if(!productId)return msg('movementMessage','Önce ürün seçin.');
   if(!qty||qty<=0)return msg('movementMessage','Geçerli bir miktar girin.');
 
@@ -489,7 +610,6 @@ window.saveMovement=async()=>{
   });
 
   if(error)return msg('movementMessage','Stok işlem hatası: '+error.message);
-
   $('movementQty').value='';
   $('movementDesc').value='';
   msg('movementMessage','Stok işlemi başarıyla kaydedildi.');
@@ -507,31 +627,25 @@ async function loadStaff(){
 async function loadStaffGroup(status,elementId){
   const el=$(elementId);
   el.textContent='Yükleniyor...';
-
   const {data,error}=await supabase.from('user_profiles')
-    .select('id,full_name,status')
-    .eq('role','staff').eq('status',status);
+    .select('id,full_name,status').eq('role','staff').eq('status',status);
 
   if(error){el.textContent=error.message;return}
   if(!data?.length){el.textContent='Personel bulunmuyor.';return}
-
   el.innerHTML='';
 
   data.forEach(p=>{
     const div=document.createElement('div');
     div.className='product';
-
     const name=document.createElement('strong');
     name.textContent=p.full_name||'İsimsiz personel';
     div.append(name);
-
     const btn=document.createElement('button');
 
     if(status==='pending'){
       btn.textContent='Onayla';
       btn.className='success';
       btn.onclick=()=>staffAction('approve_staff',p.id);
-
       const reject=document.createElement('button');
       reject.textContent='Reddet';
       reject.className='danger';
@@ -540,12 +654,9 @@ async function loadStaffGroup(status,elementId){
     }else{
       btn.textContent=status==='active'?'Pasife Al':'Yeniden Aktifleştir';
       btn.className=status==='active'?'danger':'success';
-      btn.onclick=()=>changeStaffStatus(
-        p.id,status==='active'?'inactive':'active'
-      );
+      btn.onclick=()=>changeStaffStatus(p.id,status==='active'?'inactive':'active');
       div.append(btn);
     }
-
     el.append(div);
   });
 }
@@ -557,29 +668,293 @@ async function staffAction(fn,id){
 }
 
 async function changeStaffStatus(id,status){
-  if(!confirm(status==='inactive'?
-    'Personel pasife alınsın mı?':
-    'Personel yeniden aktifleştirilsin mi?'))return;
-
-  const {error}=await supabase.rpc('set_staff_status',{
-    target_user:id,new_status:status
-  });
-
+  if(!confirm(status==='inactive'?'Personel pasife alınsın mı?':'Personel yeniden aktifleştirilsin mi?'))return;
+  const {error}=await supabase.rpc('set_staff_status',{target_user:id,new_status:status});
   if(error)return alert(error.message);
   alert('Personel durumu güncellendi.');
   await loadStaff();
 }
 
-supabase.auth.onAuthStateChange((event)=>{
-  if(event==='PASSWORD_RECOVERY'){
-    const pass=prompt('Yeni şifrenizi girin.');
-    if(pass){
-      supabase.auth.updateUser({password:pass})
-      .then(({error})=>alert(error?
-        error.message:'Şifreniz güncellendi.'));
+/* CARİ HESAPLAR */
+
+async function loadCustomers(){
+  const {data,error}=await supabase.from('customers').select('*').order('name');
+  if(error){alert('Müşteriler yüklenemedi: '+error.message);return}
+  customers=data||[];
+  renderCustomers();
+  fillCustomerSelects();
+}
+
+function renderCustomers(){
+  const el=$('customerList');
+  el.innerHTML='';
+  if(!customers.length){el.textContent='Henüz müşteri eklenmemiş.';return;}
+
+  customers.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='product';
+    const n=document.createElement('strong');
+    n.textContent=c.name;
+    const b=document.createElement('p');
+    b.textContent='Bakiye: '+money(c.balance,c.currency);
+    const p=document.createElement('p');
+    p.textContent='Telefon: '+(c.phone||'-');
+    d.append(n,b,p);
+
+    if(currentProfile.role==='admin'){
+      const btn=document.createElement('button');
+      btn.textContent='Düzenle';
+      btn.className='secondary';
+      btn.onclick=()=>editCustomer(c);
+      d.append(btn);
     }
+    el.append(d);
+  });
+}
+
+function fillCustomerSelects(){
+  ['saleCustomer','paymentCustomer'].forEach(id=>{
+    const el=$(id);
+    el.innerHTML='<option value="">Müşteri seçiniz</option>';
+    customers.forEach(c=>{
+      const o=document.createElement('option');
+      o.value=c.id;
+      o.textContent=c.name+' - '+money(c.balance,c.currency);
+      el.append(o);
+    });
+  });
+}
+
+window.newCustomer=()=>{
+  if(currentProfile?.role!=='admin')return alert('Yönetici yetkisi gerekli.');
+  $('customerId').value='';
+  $('customerName').value='';
+  $('customerPhone').value='';
+  $('customerAddress').value='';
+  $('customerTax').value='';
+  $('customerCurrency').value='TRY';
+  $('customerFormTitle').textContent='Müşteri Ekle';
+  showPage('customerFormPage');
+};
+
+function editCustomer(c){
+  $('customerId').value=c.id;
+  $('customerName').value=c.name||'';
+  $('customerPhone').value=c.phone||'';
+  $('customerAddress').value=c.address||'';
+  $('customerTax').value=c.tax_number||'';
+  $('customerCurrency').value=c.currency||'TRY';
+  $('customerFormTitle').textContent='Müşteri Düzenle';
+  showPage('customerFormPage');
+}
+
+window.saveCustomer=async()=>{
+  if(currentProfile?.role!=='admin')return alert('Yönetici yetkisi gerekli.');
+  const name=$('customerName').value.trim();
+  if(!name)return alert('Müşteri adı gerekli.');
+
+  const {error}=await supabase.rpc('admin_save_customer',{
+    p_id:$('customerId').value||null,
+    p_name:name,
+    p_phone:$('customerPhone').value.trim()||null,
+    p_address:$('customerAddress').value.trim()||null,
+    p_tax_number:$('customerTax').value.trim()||null,
+    p_currency:$('customerCurrency').value
+  });
+
+  if(error)return alert('Kaydetme hatası: '+error.message);
+  alert('Müşteri kaydedildi.');
+  await loadCustomers();
+  showPage('customersPage');
+};
+
+/* SATIŞ */
+
+async function loadSalePage(){
+  await loadProducts();
+  await loadCustomers();
+  await loadDiscountSettings();
+  updateSaleProducts();
+  renderCart();
+  toggleSaleCustomer();
+}
+
+window.updateSaleProducts=()=>{
+  const currency=$('saleCurrency').value;
+  const el=$('saleProduct');
+  el.innerHTML='';
+  const matching=products.filter(p=>p.active!==false&&p.currency===currency);
+  matching.forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.id;
+    o.textContent=p.name+' | '+money(p.sale_price,p.currency)+' | Stok: '+p.stock;
+    el.append(o);
+  });
+  if(currency==='TRY')$('saleExchangeRate').value='1';
+};
+
+function renderCart(){
+  const el=$('cartList');
+  el.innerHTML='';
+  if(!cart.length){
+    el.textContent='Sepet boş.';
+    $('saleTotal').textContent='Toplam: 0';
+    return;
   }
-});
+
+  let subtotal=0;
+  cart.forEach((item,i)=>{
+    subtotal+=item.price*item.quantity;
+    const d=document.createElement('div');
+    d.className='product';
+    d.textContent=item.name+' × '+item.quantity+' = '+money(item.price*item.quantity,item.currency);
+    const btn=document.createElement('button');
+    btn.className='danger';
+    btn.textContent='Sepetten çıkar';
+    btn.onclick=()=>{cart.splice(i,1);renderCart();};
+    d.append(btn);
+    el.append(d);
+  });
+
+  const discount=Number($('saleDiscount').value||0);
+  $('saleTotal').textContent='Ara toplam: '+money(subtotal,$('saleCurrency').value)+
+    ' | İskonto sonrası: '+money(subtotal*(1-discount/100),$('saleCurrency').value);
+}
+
+window.addToCart=()=>{
+  const p=products.find(x=>x.id===$('saleProduct').value);
+  const qty=Number($('saleQuantity').value);
+  if(!p)return alert('Bu para biriminde ürün bulunamadı.');
+  if(!qty||qty<=0)return alert('Geçerli miktar girin.');
+  if(qty>Number(p.stock))return alert('Yetersiz stok.');
+  const old=cart.find(x=>x.id===p.id);
+  if(old){
+    if(old.quantity+qty>Number(p.stock))return alert('Yetersiz stok.');
+    old.quantity+=qty;
+  }else{
+    cart.push({id:p.id,name:p.name,price:Number(p.sale_price),currency:p.currency,quantity:qty});
+  }
+  renderCart();
+};
+
+window.toggleSaleCustomer=()=>{
+  $('saleCustomer').required=$('salePaymentMethod').value==='credit';
+};
+
+window.completeSale=async()=>{
+  if(!cart.length)return alert('Sepete ürün ekleyin.');
+  const currency=$('saleCurrency').value;
+  const rate=Number($('saleExchangeRate').value);
+  const discount=Number($('saleDiscount').value||0);
+  const method=$('salePaymentMethod').value;
+  const customer=$('saleCustomer').value||null;
+
+  if(!rate||rate<=0)return alert('Geçerli döviz kuru girin.');
+  if(currency==='TRY'&&rate!==1)return alert('TL satışında kur 1 olmalıdır.');
+  if(discount<0||discount>maxDiscount)return alert('İskonto sınırı: %'+maxDiscount);
+  if(method==='credit'&&!customer)return alert('Veresiye satışta müşteri seçmelisiniz.');
+
+  const items=cart.map(x=>({product_id:x.id,quantity:x.quantity}));
+  const {data,error}=await supabase.rpc('create_sale',{
+    p_customer_id:customer,
+    p_currency:currency,
+    p_exchange_rate:rate,
+    p_discount_percent:discount,
+    p_payment_method:method,
+    p_items:items
+  });
+
+  if(error)return alert('Satış hatası: '+error.message);
+  alert('Satış tamamlandı. İşlem no: '+data);
+  cart=[];
+  $('saleDiscount').value='0';
+  renderCart();
+  await loadProducts();
+  await loadCustomers();
+};
+
+/* TAHSİLAT */
+
+window.updatePaymentCurrency=()=>{
+  const c=customers.find(x=>x.id===$('paymentCustomer').value);
+  if(!c)return;
+  $('paymentCurrency').value=c.currency;
+  $('paymentExchangeRate').value=c.currency==='TRY'?'1':'';
+};
+
+window.savePayment=async()=>{
+  const customer=$('paymentCustomer').value;
+  const amount=Number($('paymentAmount').value);
+  const currency=$('paymentCurrency').value;
+  const rate=Number($('paymentExchangeRate').value);
+  if(!customer)return alert('Müşteri seçin.');
+  if(!amount||amount<=0)return alert('Geçerli tahsilat tutarı girin.');
+  if(!rate||rate<=0)return alert('Geçerli döviz kuru girin.');
+
+  const {error}=await supabase.rpc('record_customer_payment',{
+    p_customer_id:customer,
+    p_amount:amount,
+    p_currency:currency,
+    p_exchange_rate:rate,
+    p_payment_method:$('paymentMethod').value,
+    p_note:$('paymentNote').value.trim()||null
+  });
+
+  if(error)return alert('Tahsilat hatası: '+error.message);
+  alert('Tahsilat kaydedildi.');
+  $('paymentAmount').value='';
+  $('paymentNote').value='';
+  await loadCustomers();
+};
+
+/* İSKONTO AYARI */
+
+async function loadDiscountSettings(){
+  const {data,error}=await supabase.rpc('get_sale_settings');
+  if(error){alert('İskonto ayarı alınamadı: '+error.message);return;}
+  maxDiscount=Number(data?.[0]?.max_discount??15);
+  $('maxDiscountInput').value=maxDiscount;
+}
+
+window.saveDiscountSettings=async()=>{
+  if(currentProfile?.role!=='admin')return alert('Yönetici yetkisi gerekli.');
+  const value=Number($('maxDiscountInput').value);
+  if(value<0||value>100)return alert('İskonto 0 ile 100 arasında olmalı.');
+  const {error}=await supabase.rpc('admin_set_max_discount',{p_max_discount:value});
+  if(error)return alert(error.message);
+  maxDiscount=value;
+  alert('İskonto sınırı güncellendi.');
+};
+
+/* SATIŞ GEÇMİŞİ */
+
+async function loadSalesHistory(){
+  const el=$('salesHistory');
+  el.textContent='Satışlar yükleniyor...';
+  const {data,error}=await supabase.from('sales')
+    .select('*').order('created_at',{ascending:false}).limit(100);
+
+  if(error){el.textContent='Geçmiş yüklenemedi: '+error.message;return;}
+  el.innerHTML='';
+  if(!data?.length){el.textContent='Henüz satış yok.';return;}
+
+  for(const s of data){
+    const d=document.createElement('div');
+    d.className='product';
+    const items=await supabase.from('sale_items')
+      .select('product_name,quantity,line_total')
+      .eq('sale_id',s.id);
+
+    const title=document.createElement('strong');
+    title.textContent=new Date(s.created_at).toLocaleString('tr-TR');
+    const detail=document.createElement('p');
+    detail.textContent='Ürünler: '+(items.data||[]).map(x=>x.product_name+' × '+x.quantity).join(', ');
+    const total=document.createElement('p');
+    total.textContent='Toplam: '+money(s.total,s.currency)+' | Ödeme: '+s.payment_method;
+    d.append(title,detail,total);
+    el.append(d);
+  }
+}
 
 await checkSession();
 </script>
