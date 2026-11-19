@@ -18,8 +18,12 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Android SDK kur
-        uses: android-actions/setup-android@v3
+      - name: Android SDK kur ve lisansları kabul et
+        uses: android-actions/setup-android@v4
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+          packages: platform-tools
 
       - name: Gradle kur
         uses: gradle/actions/setup-gradle@v4
@@ -79,8 +83,7 @@ jobs:
               <uses-permission android:name="android.permission.INTERNET"/>
               <application
                   android:label="YAZICIOĞLU"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
-                  android:usesCleartextTraffic="false">
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
                   <activity
                       android:name=".MainActivity"
                       android:exported="true"
@@ -104,7 +107,6 @@ jobs:
           import android.webkit.WebViewClient;
           import android.webkit.WebChromeClient;
           import android.webkit.CookieManager;
-          import android.view.KeyEvent;
 
           public class MainActivity extends Activity {
               WebView webView;
@@ -112,7 +114,6 @@ jobs:
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-
                   webView = new WebView(this);
                   setContentView(webView);
 
@@ -125,7 +126,6 @@ jobs:
 
                   webView.setWebViewClient(new WebViewClient());
                   webView.setWebChromeClient(new WebChromeClient());
-
                   webView.loadUrl("https://atakanyazici8-oss.github.io/Yazicioglu-stok/");
               }
 
