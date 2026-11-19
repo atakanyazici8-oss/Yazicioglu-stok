@@ -7,28 +7,31 @@
 <title>Yazıcıoğlu Ticaret - Stok Takip</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f1f4f8;color:#222}
-.container{max-width:520px;margin:25px auto;padding:16px}
-.card{background:white;padding:22px;border-radius:14px;box-shadow:0 3px 15px #0001}
+body{margin:0;background:#f1f4f8;font-family:Arial;color:#222}
+.container{max-width:680px;margin:20px auto;padding:12px}
+.card{background:white;padding:18px;border-radius:14px;box-shadow:0 3px 15px #0001;margin-bottom:14px}
 h2{text-align:center;color:#183b62}
-input,button{width:100%;padding:13px;margin:7px 0;border-radius:8px;font-size:16px}
-input{border:1px solid #ccc}
+input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;font-size:15px}
+input,select{border:1px solid #ccc;background:white}
 button{border:0;background:#174b7a;color:white;font-weight:bold;cursor:pointer}
-button.secondary{background:#667788}
-button.danger{background:#b52b35}
-button.success{background:#237a4b}
-.hidden{display:none}
-.message{padding:10px;margin-top:10px;border-radius:8px;background:#edf3f8}
-.person{border:1px solid #ddd;padding:12px;border-radius:9px;margin:10px 0}
-.person button{font-size:14px;padding:10px}
-.actions{display:flex;gap:8px}
-.actions button{width:50%}
-.section-title{margin-top:22px;border-bottom:1px solid #ddd;padding-bottom:8px;color:#183b62}
-.status{font-size:13px;color:#666}
+.secondary{background:#667788}
+.danger{background:#b52b35}
+.success{background:#237a4b}
+.hidden{display:none!important}
+.message{padding:10px;background:#edf3f8;border-radius:8px;margin-top:8px;overflow-wrap:anywhere}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nav button{margin:0}
+.product{border:1px solid #ddd;border-radius:10px;padding:13px;margin:10px 0}
+.product strong{font-size:17px;color:#183b62}
+.muted{color:#777;font-size:13px}
+.price{font-size:16px;font-weight:bold;margin-top:7px}
+.low{color:#b52b35;font-weight:bold}
+.section-title{color:#183b62;border-bottom:1px solid #ddd;padding-bottom:7px}
 </style>
 </head>
 <body>
 <div class="container">
+
 <div class="card">
 <h2>YAZICIOĞLU TİCARET</h2>
 <p style="text-align:center">Bulut Stok Takip Sistemi</p>
@@ -47,196 +50,450 @@ button.success{background:#237a4b}
 <h3>Personel Kaydı</h3>
 <input id="regName" placeholder="Ad Soyad">
 <input id="regEmail" type="email" placeholder="E-posta">
-<input id="regPassword" type="password" placeholder="Şifre (en az 6 karakter)">
+<input id="regPassword" type="password" placeholder="Şifre">
 <button onclick="register()">Kayıt Ol</button>
-<button class="secondary" onclick="showLogin()">Giriş Ekranına Dön</button>
+<button class="secondary" onclick="showLogin()">Girişe Dön</button>
 </div>
 <div id="message" class="message hidden"></div>
 </section>
 
 <section id="pending" class="hidden">
 <h3>Onay Bekleniyor</h3>
-<p>Üyeliğiniz oluşturuldu. Yönetici onayını bekliyorsunuz.</p>
+<p>Yönetici onayını bekliyorsunuz.</p>
 <button class="secondary" onclick="logout()">Çıkış Yap</button>
 </section>
 
 <section id="rejected" class="hidden">
 <h3>Üyelik Onaylanmadı</h3>
-<p>Hesabınız yönetici tarafından onaylanmadı.</p>
 <button class="secondary" onclick="logout()">Çıkış Yap</button>
 </section>
 
 <section id="inactive" class="hidden">
-<h3>Hesabınız Pasif</h3>
-<p>Yönetici hesabınızı geçici olarak pasife almış. Erişim için yöneticinizle görüşün.</p>
+<h3>Hesabınız Pasife Alınmıştır</h3>
+<p>Yönetici ile iletişime geçin.</p>
 <button class="secondary" onclick="logout()">Çıkış Yap</button>
 </section>
 
 <section id="dashboard" class="hidden">
 <h3 id="welcome"></h3>
-<p>Giriş başarılı.</p>
-
-<div id="adminPanel" class="hidden">
-<hr>
-<h3>Personel Yönetimi</h3>
-
-<h4 class="section-title">Bekleyen Personeller</h4>
-<div id="pendingList">Yükleniyor...</div>
-
-<h4 class="section-title">Aktif Personeller</h4>
-<div id="activeList">Yükleniyor...</div>
-
-<h4 class="section-title">Pasif Personeller</h4>
-<div id="inactiveList">Yükleniyor...</div>
+<div class="nav">
+<button onclick="showPage('productsPage')">Ürünler ve Stok</button>
+<button onclick="showPage('movementPage')">Stok İşlemi</button>
+<button id="addProductNav" class="hidden" onclick="newProduct()">Ürün Ekle</button>
+<button id="staffNav" class="hidden" onclick="showPage('staffPage')">Personel Yönetimi</button>
+</div>
+</section>
 </div>
 
-<button class="secondary" onclick="logout()">Güvenli Çıkış</button>
+<section id="productsPage" class="card hidden">
+<h3 class="section-title">Ürünler ve Stok</h3>
+<input id="searchProduct" placeholder="Ürün ara..." oninput="filterProducts()">
+<div id="productList">Yükleniyor...</div>
+<button class="secondary" onclick="backHome()">Ana Menü</button>
 </section>
+
+<section id="productFormPage" class="card hidden">
+<h3 id="productFormTitle">Yeni Ürün</h3>
+<input id="productId" type="hidden">
+<label>Ürün adı</label>
+<input id="pName" placeholder="Ürün adı">
+<label>Ürün kodu / Barkod</label>
+<input id="pSku" placeholder="Ürün kodu">
+<label>Kategori</label>
+<input id="pCategory" placeholder="Kategori">
+<label>Birim</label>
+<select id="pUnit">
+<option value="Adet">Adet</option>
+<option value="Paket">Paket</option>
+<option value="Metre">Metre</option>
+<option value="Kutu">Kutu</option>
+<option value="Kg">Kg</option>
+</select>
+<label>Alış fiyatı</label>
+<input id="pBuy" type="number" min="0" step="0.01" placeholder="Alış fiyatı">
+<label>Satış fiyatı</label>
+<input id="pSale" type="number" min="0" step="0.01" placeholder="Satış fiyatı">
+<label>Para birimi</label>
+<select id="pCurrency">
+<option value="TRY">Türk Lirası (TL)</option>
+<option value="USD">Dolar (USD)</option>
+<option value="EUR">Euro (EUR)</option>
+</select>
+<label>Minimum stok uyarısı</label>
+<input id="pMin" type="number" min="0" step="0.01" value="0">
+<label>Durum</label>
+<select id="pActive">
+<option value="true">Aktif</option>
+<option value="false">Pasif</option>
+</select>
+<button onclick="saveProduct()">Ürünü Kaydet</button>
+<button class="secondary" onclick="showPage('productsPage')">Vazgeç</button>
+<div id="productMessage" class="message hidden"></div>
+</section>
+
+<section id="movementPage" class="card hidden">
+<h3 class="section-title">Stok Giriş / Çıkış</h3>
+<label>Ürün</label>
+<select id="movementProduct"></select>
+<label>İşlem türü</label>
+<select id="movementType">
+<option value="in">Stok Girişi</option>
+<option value="out">Stok Çıkışı</option>
+<option value="return">İade / Geri Giriş</option>
+</select>
+<label>Miktar</label>
+<input id="movementQty" type="number" min="0.01" step="0.01" placeholder="Miktar">
+<label>Açıklama</label>
+<input id="movementDesc" placeholder="İşlem açıklaması">
+<button onclick="saveMovement()">Stok İşlemini Kaydet</button>
+<div id="movementMessage" class="message hidden"></div>
+<button class="secondary" onclick="backHome()">Ana Menü</button>
+</section>
+
+<section id="staffPage" class="card hidden">
+<h3 class="section-title">Personel Yönetimi</h3>
+<h4>Bekleyen Personeller</h4>
+<div id="pendingList"></div>
+<h4>Aktif Personeller</h4>
+<div id="activeList"></div>
+<h4>Pasif Personeller</h4>
+<div id="inactiveList"></div>
+<button class="secondary" onclick="backHome()">Ana Menü</button>
+</section>
+
+<div class="card hidden" id="logoutCard">
+<button class="danger" onclick="logout()">Güvenli Çıkış</button>
 </div>
 </div>
 
 <script type="module">
-import { createClient } from
-'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const SUPABASE_URL = 'https://axazlwychehqcpszspoi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T';
+const SUPABASE_URL='https://axazlwychehqcpszspoi.supabase.co';
+const SUPABASE_KEY='sb_publishable_XEBT2jlfZP2xobJgUr8KMQ_bos9Oj4T';
+const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
+let currentProfile=null;
+let products=[];
 
-function message(text) {
-  $('message').textContent = text;
-  $('message').classList.remove('hidden');
+function msg(id,text){
+  $(id).textContent=text;
+  $(id).classList.remove('hidden');
 }
 
-function hideAll() {
-  ['auth','pending','rejected','inactive','dashboard'].forEach(id =>
-    $(id).classList.add('hidden')
-  );
+function hideAll(){
+  ['auth','pending','rejected','inactive','dashboard','productsPage',
+   'productFormPage','movementPage','staffPage','logoutCard']
+   .forEach(id=>$(id).classList.add('hidden'));
 }
 
-window.showRegister = () => {
+function showPage(id){
+  ['dashboard','productsPage','productFormPage','movementPage','staffPage']
+  .forEach(x=>$(x).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+  $('logoutCard').classList.remove('hidden');
+  if(id==='productsPage')loadProducts();
+  if(id==='movementPage')loadMovementProducts();
+  if(id==='staffPage')loadStaff();
+}
+window.showPage=showPage;
+
+function backHome(){showPage('dashboard')}
+window.backHome=backHome;
+
+window.showRegister=()=>{
   $('loginForm').classList.add('hidden');
   $('registerForm').classList.remove('hidden');
-  $('message').classList.add('hidden');
 };
-
-window.showLogin = () => {
+window.showLogin=()=>{
   $('registerForm').classList.add('hidden');
   $('loginForm').classList.remove('hidden');
-  $('message').classList.add('hidden');
 };
 
-window.login = async () => {
-  const email = $('loginEmail').value.trim();
-  const password = $('loginPassword').value;
-  if (!email || !password) return message('E-posta ve şifre girin.');
-
-  const { error } = await supabase.auth.signInWithPassword({email,password});
-  if (error) return message('Giriş hatası: ' + error.message);
-
+window.login=async()=>{
+  const email=$('loginEmail').value.trim();
+  const password=$('loginPassword').value;
+  if(!email||!password)return msg('message','E-posta ve şifre girin.');
+  const {error}=await supabase.auth.signInWithPassword({email,password});
+  if(error)return msg('message','Giriş hatası: '+error.message);
   await checkSession();
 };
 
-window.register = async () => {
-  const full_name = $('regName').value.trim();
-  const email = $('regEmail').value.trim();
-  const password = $('regPassword').value;
-
-  if (!full_name || !email || !password)
-    return message('Tüm alanları doldurun.');
-
-  if (password.length < 6)
-    return message('Şifre en az 6 karakter olmalı.');
-
-  const {data,error} = await supabase.auth.signUp({
+window.register=async()=>{
+  const full_name=$('regName').value.trim();
+  const email=$('regEmail').value.trim();
+  const password=$('regPassword').value;
+  if(!full_name||!email||!password)return msg('message','Tüm alanları doldurun.');
+  if(password.length<6)return msg('message','Şifre en az 6 karakter olmalı.');
+  const {data,error}=await supabase.auth.signUp({
     email,password,options:{data:{full_name}}
   });
-
-  if (error) return message('Kayıt hatası: ' + error.message);
-
-  if (data.session) {
-    await checkSession();
-  } else {
-    message('Kayıt oluşturuldu. E-posta adresinizi doğrulayın. Ardından yönetici onayı beklenecek.');
-  }
+  if(error)return msg('message','Kayıt hatası: '+error.message);
+  if(data.session)await checkSession();
+  else msg('message','Kayıt oluşturuldu. E-posta doğrulamasını tamamlayın.');
 };
 
-window.resetPassword = async () => {
-  const email = $('loginEmail').value.trim();
-  if (!email) return message('Önce e-posta adresinizi yazın.');
-
-  const {error} = await supabase.auth.resetPasswordForEmail(email,{
-    redirectTo:location.origin + location.pathname
+window.resetPassword=async()=>{
+  const email=$('loginEmail').value.trim();
+  if(!email)return msg('message','Önce e-posta adresinizi yazın.');
+  const {error}=await supabase.auth.resetPasswordForEmail(email,{
+    redirectTo:location.origin+location.pathname
   });
-
-  if (error) return message('Hata: ' + error.message);
-  message('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.');
+  if(error)return msg('message',error.message);
+  msg('message','Şifre sıfırlama bağlantısı gönderildi.');
 };
 
-window.logout = async () => {
+window.logout=async()=>{
   await supabase.auth.signOut();
+  currentProfile=null;
   hideAll();
   $('auth').classList.remove('hidden');
-  showLogin();
+  window.showLogin();
 };
 
-async function checkSession() {
-  const {data:{session}} = await supabase.auth.getSession();
-
-  if (!session) {
+async function checkSession(){
+  const {data:{session}}=await supabase.auth.getSession();
+  if(!session){
     hideAll();
     $('auth').classList.remove('hidden');
     return;
   }
 
-  const {data:profile,error} = await supabase
-    .from('user_profiles')
+  const {data:p,error}=await supabase.from('user_profiles')
     .select('full_name,role,status')
-    .eq('id',session.user.id)
-    .single();
+    .eq('id',session.user.id).single();
 
-  if (error || !profile) {
+  if(error||!p){
     hideAll();
     $('auth').classList.remove('hidden');
-    message('Kullanıcı profili bulunamadı. Yöneticiyle iletişime geçin.');
-    return;
+    return msg('message','Kullanıcı profili bulunamadı: '+(error?.message||''));
   }
 
+  currentProfile=p;
   hideAll();
 
-  if (profile.status === 'pending') {
-    $('pending').classList.remove('hidden');
-    return;
-  }
-
-  if (profile.status === 'rejected') {
-    $('rejected').classList.remove('hidden');
-    return;
-  }
-
-  if (profile.status === 'inactive') {
-    $('inactive').classList.remove('hidden');
-    return;
-  }
-
-  if (profile.status !== 'active') {
+  if(p.status==='pending'){$('pending').classList.remove('hidden');return}
+  if(p.status==='rejected'){$('rejected').classList.remove('hidden');return}
+  if(p.status==='inactive'){$('inactive').classList.remove('hidden');return}
+  if(p.status!=='active'){
     $('auth').classList.remove('hidden');
-    message('Hesap durumu geçersiz.');
-    return;
+    return msg('message','Hesap durumu geçersiz.');
   }
 
   $('dashboard').classList.remove('hidden');
-  $('welcome').textContent = 'Hoş geldiniz, ' + (profile.full_name || '');
+  $('logoutCard').classList.remove('hidden');
+  $('welcome').textContent='Hoş geldiniz, '+(p.full_name||'');
 
-  if (profile.role === 'admin') {
-    $('adminPanel').classList.remove('hidden');
-    await loadStaff();
+  if(p.role==='admin'){
+    $('addProductNav').classList.remove('hidden');
+    $('staffNav').classList.remove('hidden');
+  }else{
+    $('addProductNav').classList.add('hidden');
+    $('staffNav').classList.add('hidden');
   }
 }
 
-async function loadStaff() {
+function money(value,currency){
+  try{
+    return new Intl.NumberFormat('tr-TR',{
+      style:'currency',currency:currency||'TRY'
+    }).format(Number(value||0));
+  }catch(e){return Number(value||0).toFixed(2)+' '+currency}
+}
+
+async function loadProducts(){
+  $('productList').textContent='Ürünler yükleniyor...';
+  let result;
+
+  if(currentProfile.role==='admin'){
+    result=await supabase.rpc('admin_list_products');
+  }else{
+    result=await supabase.from('products_public')
+      .select('*').eq('active',true).order('name');
+  }
+
+  if(result.error){
+    $('productList').textContent='Ürün yükleme hatası: '+result.error.message;
+    return;
+  }
+
+  products=result.data||[];
+  renderProducts(products);
+}
+
+function renderProducts(items){
+  const list=$('productList');
+  list.innerHTML='';
+
+  if(!items.length){
+    list.textContent='Henüz ürün eklenmemiş.';
+    return;
+  }
+
+  items.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='product';
+
+    const title=document.createElement('strong');
+    title.textContent=p.name||'İsimsiz ürün';
+
+    const info=document.createElement('p');
+    info.className='muted';
+    info.textContent=(p.sku||'Kod yok')+' • '+(p.category||'Kategorisiz')+' • '+(p.unit||'Adet');
+
+    const stock=document.createElement('p');
+    stock.textContent='Stok: '+Number(p.stock||0);
+    if(Number(p.stock||0)<=Number(p.min_stock||0)){
+      stock.className='low';
+      stock.textContent+=' • KRİTİK STOK';
+    }
+
+    const price=document.createElement('div');
+    price.className='price';
+    price.textContent='Satış: '+money(p.sale_price,p.currency);
+
+    div.append(title,info,stock,price);
+
+    if(currentProfile.role==='admin'){
+      const buy=document.createElement('p');
+      buy.className='muted';
+      buy.textContent='Alış: '+money(p.buy_price,p.currency);
+
+      const edit=document.createElement('button');
+      edit.className='secondary';
+      edit.textContent='Ürünü Düzenle';
+      edit.onclick=()=>editProduct(p);
+
+      div.append(buy,edit);
+    }
+
+    list.append(div);
+  });
+}
+
+window.filterProducts=()=>{
+  const q=$('searchProduct').value.toLocaleLowerCase('tr-TR');
+  renderProducts(products.filter(p=>
+    (p.name||'').toLocaleLowerCase('tr-TR').includes(q)||
+    (p.sku||'').toLocaleLowerCase('tr-TR').includes(q)||
+    (p.category||'').toLocaleLowerCase('tr-TR').includes(q)
+  ));
+};
+
+window.newProduct=()=>{
+  $('productFormTitle').textContent='Yeni Ürün Ekle';
+  ['productId','pName','pSku','pCategory','pBuy','pSale']
+    .forEach(id=>$(id).value='');
+  $('pUnit').value='Adet';
+  $('pCurrency').value='TRY';
+  $('pMin').value='0';
+  $('pActive').value='true';
+  $('pBuy').disabled=false;
+  $('productMessage').classList.add('hidden');
+  showPage('productFormPage');
+};
+
+function editProduct(p){
+  $('productFormTitle').textContent='Ürünü Düzenle';
+  $('productId').value=p.id;
+  $('pName').value=p.name||'';
+  $('pSku').value=p.sku||'';
+  $('pCategory').value=p.category||'';
+  $('pUnit').value=p.unit||'Adet';
+  $('pBuy').value=p.buy_price??'';
+  $('pSale').value=p.sale_price??'';
+  $('pCurrency').value=p.currency||'TRY';
+  $('pMin').value=p.min_stock||0;
+  $('pActive').value=String(p.active!==false);
+  $('pBuy').disabled=false;
+  $('productMessage').classList.add('hidden');
+  showPage('productFormPage');
+}
+
+window.saveProduct=async()=>{
+  if(currentProfile.role!=='admin')
+    return alert('Yönetici yetkisi gerekli.');
+
+  const name=$('pName').value.trim();
+  const buy=Number($('pBuy').value);
+  const sale=Number($('pSale').value);
+  const min=Number($('pMin').value);
+
+  if(!name)return msg('productMessage','Ürün adı gerekli.');
+  if($('pBuy').value===''||$('pSale').value===''||
+     buy<0||sale<0||min<0)
+    return msg('productMessage','Fiyat ve minimum stok bilgilerini kontrol edin.');
+
+  const {error}=await supabase.rpc('admin_save_product',{
+    p_id:$('productId').value||null,
+    p_name:name,
+    p_sku:$('pSku').value.trim()||null,
+    p_category:$('pCategory').value.trim()||null,
+    p_unit:$('pUnit').value,
+    p_buy_price:buy,
+    p_sale_price:sale,
+    p_currency:$('pCurrency').value,
+    p_min_stock:min,
+    p_active:$('pActive').value==='true'
+  });
+
+  if(error)return msg('productMessage','Kaydetme hatası: '+error.message);
+
+  alert('Ürün kaydedildi.');
+  showPage('productsPage');
+};
+
+async function loadMovementProducts(){
+  let result;
+
+  if(currentProfile.role==='admin'){
+    result=await supabase.rpc('admin_list_products');
+  }else{
+    result=await supabase.from('products_public')
+      .select('*').eq('active',true).order('name');
+  }
+
+  if(result.error){
+    $('movementProduct').innerHTML='';
+    return msg('movementMessage','Ürünler alınamadı: '+result.error.message);
+  }
+
+  const select=$('movementProduct');
+  select.innerHTML='';
+
+  (result.data||[]).filter(p=>p.active!==false).forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.id;
+    opt.textContent=p.name+' (Stok: '+p.stock+')';
+    select.append(opt);
+  });
+}
+
+window.saveMovement=async()=>{
+  const productId=$('movementProduct').value;
+  const qty=Number($('movementQty').value);
+  const type=$('movementType').value;
+
+  if(!productId)return msg('movementMessage','Önce ürün seçin.');
+  if(!qty||qty<=0)return msg('movementMessage','Geçerli bir miktar girin.');
+
+  const {error}=await supabase.rpc('record_stock_movement',{
+    p_product_id:productId,
+    p_movement_type:type,
+    p_quantity:qty,
+    p_description:$('movementDesc').value.trim()||null
+  });
+
+  if(error)return msg('movementMessage','Stok işlem hatası: '+error.message);
+
+  $('movementQty').value='';
+  $('movementDesc').value='';
+  msg('movementMessage','Stok işlemi başarıyla kaydedildi.');
+  await loadMovementProducts();
+};
+
+async function loadStaff(){
   await Promise.all([
     loadStaffGroup('pending','pendingList'),
     loadStaffGroup('active','activeList'),
@@ -244,128 +501,79 @@ async function loadStaff() {
   ]);
 }
 
-async function loadStaffGroup(status, elementId) {
-  const el = $(elementId);
-  el.textContent = 'Yükleniyor...';
+async function loadStaffGroup(status,elementId){
+  const el=$(elementId);
+  el.textContent='Yükleniyor...';
 
-  const {data,error} = await supabase
-    .from('user_profiles')
+  const {data,error}=await supabase.from('user_profiles')
     .select('id,full_name,status')
-    .eq('role','staff')
-    .eq('status',status);
+    .eq('role','staff').eq('status',status);
 
-  if (error) {
-    el.textContent = 'Hata: ' + error.message;
-    return;
-  }
+  if(error){el.textContent=error.message;return}
+  if(!data?.length){el.textContent='Personel bulunmuyor.';return}
 
-  if (!data || data.length === 0) {
-    el.textContent = 'Bu bölümde personel bulunmuyor.';
-    return;
-  }
+  el.innerHTML='';
 
-  el.innerHTML = '';
+  data.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='product';
 
-  data.forEach(person => {
-    const div = document.createElement('div');
-    div.className = 'person';
+    const name=document.createElement('strong');
+    name.textContent=p.full_name||'İsimsiz personel';
+    div.append(name);
 
-    const name = document.createElement('strong');
-    name.textContent = person.full_name || 'İsimsiz personel';
+    const btn=document.createElement('button');
 
-    const statusText = document.createElement('p');
-    statusText.className = 'status';
-    statusText.textContent =
-      status === 'pending' ? 'Onay bekliyor' :
-      status === 'active' ? 'Aktif personel' : 'Pasif personel';
+    if(status==='pending'){
+      btn.textContent='Onayla';
+      btn.className='success';
+      btn.onclick=()=>staffAction('approve_staff',p.id);
 
-    div.append(name,statusText);
-
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-
-    if (status === 'pending') {
-      const approve = document.createElement('button');
-      approve.className = 'success';
-      approve.textContent = 'Onayla';
-      approve.onclick = () => staffAction('approve_staff',person.id);
-
-      const reject = document.createElement('button');
-      reject.className = 'danger';
-      reject.textContent = 'Reddet';
-      reject.onclick = () => staffAction('reject_staff',person.id);
-
-      actions.append(approve,reject);
+      const reject=document.createElement('button');
+      reject.textContent='Reddet';
+      reject.className='danger';
+      reject.onclick=()=>staffAction('reject_staff',p.id);
+      div.append(btn,reject);
+    }else{
+      btn.textContent=status==='active'?'Pasife Al':'Yeniden Aktifleştir';
+      btn.className=status==='active'?'danger':'success';
+      btn.onclick=()=>changeStaffStatus(
+        p.id,status==='active'?'inactive':'active'
+      );
+      div.append(btn);
     }
 
-    if (status === 'active') {
-      const deactivate = document.createElement('button');
-      deactivate.className = 'danger';
-      deactivate.textContent = 'Pasife Al';
-      deactivate.onclick = () => changeStatus(person.id,'inactive');
-      actions.append(deactivate);
-    }
-
-    if (status === 'inactive') {
-      const activate = document.createElement('button');
-      activate.className = 'success';
-      activate.textContent = 'Yeniden Aktifleştir';
-      activate.onclick = () => changeStatus(person.id,'active');
-      actions.append(activate);
-    }
-
-    if (actions.children.length) div.append(actions);
     el.append(div);
   });
 }
 
-async function staffAction(functionName,id) {
-  const approved = functionName === 'approve_staff';
-
-  if (!confirm(approved ?
-    'Bu personeli onaylamak istiyor musunuz?' :
-    'Bu personeli reddetmek istiyor musunuz?')) return;
-
-  const {error} = await supabase.rpc(functionName,{target_user:id});
-
-  if (error) {
-    alert('İşlem başarısız: ' + error.message);
-    return;
-  }
-
-  alert(approved ? 'Personel onaylandı.' : 'Personel reddedildi.');
+async function staffAction(fn,id){
+  const {error}=await supabase.rpc(fn,{target_user:id});
+  if(error)return alert(error.message);
   await loadStaff();
 }
 
-async function changeStatus(id,newStatus) {
-  const active = newStatus === 'active';
+async function changeStaffStatus(id,status){
+  if(!confirm(status==='inactive'?
+    'Personel pasife alınsın mı?':
+    'Personel yeniden aktifleştirilsin mi?'))return;
 
-  if (!confirm(active ?
-    'Bu personeli yeniden aktifleştirmek istiyor musunuz?' :
-    'Bu personeli pasife almak istiyor musunuz?')) return;
-
-  const {error} = await supabase.rpc('set_staff_status',{
-    target_user:id,
-    new_status:newStatus
+  const {error}=await supabase.rpc('set_staff_status',{
+    target_user:id,new_status:status
   });
 
-  if (error) {
-    alert('İşlem başarısız: ' + error.message);
-    return;
-  }
-
-  alert(active ? 'Personel yeniden aktifleştirildi.' : 'Personel pasife alındı.');
+  if(error)return alert(error.message);
+  alert('Personel durumu güncellendi.');
   await loadStaff();
 }
 
-supabase.auth.onAuthStateChange((event,session) => {
-  if (event === 'PASSWORD_RECOVERY') {
-    const newPassword = prompt('Yeni şifrenizi girin:');
-    if (newPassword) {
-      supabase.auth.updateUser({password:newPassword})
-        .then(({error}) => {
-          alert(error ? error.message : 'Şifreniz güncellendi.');
-        });
+supabase.auth.onAuthStateChange((event)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    const pass=prompt('Yeni şifrenizi girin.');
+    if(pass){
+      supabase.auth.updateUser({password:pass})
+      .then(({error})=>alert(error?
+        error.message:'Şifreniz güncellendi.'));
     }
   }
 });
